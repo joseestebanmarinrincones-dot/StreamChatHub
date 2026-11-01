@@ -624,6 +624,70 @@ button {
   padding: 21px 23px 12px;
 }
 
+.update-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: none;
+  margin-bottom: 13px;
+  padding: 9px 10px 9px 12px;
+  border: 1px solid rgba(139, 92, 246, 0.28);
+  border-radius: 12px;
+  background:
+    linear-gradient(90deg, rgba(139, 92, 246, 0.16), rgba(34, 211, 238, 0.055)),
+    rgba(12, 14, 22, 0.78);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.16);
+}
+
+.update-banner-icon {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 9px;
+  color: #ddd6fe;
+  background: rgba(139, 92, 246, 0.2);
+  flex: none;
+}
+
+.update-banner-icon .icon {
+  width: 15px;
+  height: 15px;
+}
+
+.update-banner-copy {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.update-banner-copy strong {
+  color: #eeeaff;
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.update-banner-copy span {
+  color: #9b93b7;
+  font-size: 9.5px;
+  line-height: 1.4;
+}
+
+.update-banner-actions {
+  display: flex;
+  gap: 6px;
+  flex: none;
+}
+
+.update-banner-actions .btn {
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 8px;
+  font-size: 9.5px;
+}
+
 .topbar {
   display: flex;
   align-items: center;

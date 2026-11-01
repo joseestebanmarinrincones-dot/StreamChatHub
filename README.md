@@ -17,8 +17,8 @@ Está inspirada en [Transparent Twitch Chat Overlay](https://github.com/baffler/
 Tienes varias formas:
 
 - **`StreamChat Hub.exe`** en el escritorio.
-- `release\StreamChatHub-1.0.0-portable.exe` dentro del proyecto. Es portátil: no necesita instalación.
-- `release\StreamChatHub-1.0.0-setup.exe` si prefieres instalarla como programa normal.
+- `release\StreamChatHub-1.1.0-portable.exe` dentro del proyecto. Es portátil: no necesita instalación.
+- `release\StreamChatHub-1.1.0-setup.exe` si prefieres instalarla como programa normal.
 
 La primera vez Windows puede mostrar “Windows protegió tu PC” porque el ejecutable no tiene firma digital. Pulsa **Más información → Ejecutar de todas formas**.
 
@@ -27,6 +27,14 @@ Si ya tienes una versión anterior de StreamChat Hub abierta, ciérrala antes de
 También puede aparecer un aviso del **firewall de Windows**. Pulsa **Permitir** si quieres que tus amigos entren por Wi-Fi; si solo vas a usar el chat en tu PC, puedes cancelarlo.
 
 No tienes que abrir el navegador ni escribir `localhost`. La app arranca su servidor interno sola y abre su propia ventana.
+
+### Avisos de actualización
+
+La app consulta GitHub al abrirse y cada 6 horas. Si hay una versión nueva, muestra una **notificación de Windows** y un aviso dentro de la app con el botón **Descargar**; nunca se actualiza sola ni interrumpe el directo. El aviso se puede cerrar con **Ahora no** y no vuelve a aparecer para esa versión.
+
+También puedes comprobarlo a mano desde el menú de la bandeja del sistema → **Buscar actualizaciones**.
+
+Los usuarios de la **1.0.0** no tienen este comprobador: deben instalar la **1.1.0** una vez manualmente. A partir de esa versión recibirán los avisos de las siguientes.
 
 ### Primeros pasos
 
@@ -213,8 +221,8 @@ npm run dist       REM genera los .exe en release\
 
 Resultados:
 
-- `release\StreamChatHub-1.0.0-portable.exe`
-- `release\StreamChatHub-1.0.0-setup.exe`
+- `release\StreamChatHub-1.1.0-portable.exe`
+- `release\StreamChatHub-1.1.0-setup.exe`
 
 El modo navegador para desarrollo sigue disponible:
 

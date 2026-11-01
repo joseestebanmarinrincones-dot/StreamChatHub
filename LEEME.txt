@@ -1,15 +1,25 @@
-﻿StreamChat Hub 1.0 - Aplicacion de escritorio
+﻿StreamChat Hub 1.1 - Aplicacion de escritorio
 ===============================================
 
 ABRIR
 -----
 Haz doble clic en "StreamChat Hub.exe" (escritorio o release).
-Tambien puedes instalar release\StreamChatHub-1.0.0-setup.exe.
+Tambien puedes instalar release\StreamChatHub-1.1.0-setup.exe.
 Si ya tienes una version anterior abierta, cierrala antes de abrir esta.
 Version con TikFinity: abre "StreamChat Hub (TikFinity).exe"
 o el acceso directo "StreamChat Hub (TikFinity)" del escritorio.
 
 No hace falta abrir el navegador ni localhost.
+
+AVISOS DE ACTUALIZACION
+-----------------------
+La app mira GitHub al abrirse y cada 6 horas.
+Si hay una version nueva, muestra una notificacion de Windows y un
+aviso dentro de la app con el boton Descargar. Nunca se actualiza sola.
+Puedes cerrar el aviso con "Ahora no".
+Tambien puedes buscar actualizaciones desde el menu de la bandeja.
+Los usuarios de la version 1.0.0 deben instalar la 1.1.0 una vez a mano;
+a partir de ahi recibiran los avisos.
 La primera vez Windows puede avisar de que el .exe no esta firmado:
 Mas informacion -> Ejecutar de todas formas.
 Si aparece el aviso del firewall, pulsa Permitir para compartir por Wi-Fi.

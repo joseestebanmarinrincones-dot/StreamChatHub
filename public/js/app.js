@@ -62,7 +62,7 @@ function cacheElements() {
     "emptyState", "emptyIcon", "emptyTitle", "emptyText", "emptyActionBtn", "newMessagesBtn",
     "newMessagesText", "socketState", "settingsLayer", "settingsBody", "saveSettingsBtn",
     "shareLayer", "shareBody", "previewLayer", "previewFrame", "previewOpenLink", "previewTestBtn",
-    "previewStage", "toastHost",
+    "previewStage", "toastHost", "updateBanner", "updateTitle", "updateText", "updateDownloadBtn", "updateDismissBtn",
   ];
   for (const id of ids) el[id] = document.getElementById(id);
 }
@@ -1599,10 +1599,84 @@ function closeSidebar() {
   if (el.sidebarScrim) el.sidebarScrim.hidden = true;
 }
 
+function updateDismissKey(tag) {
+  return `streamchat:update-dismissed:${tag}`;
+}
+
+function hideUpdateBanner() {
+  if (el.updateBanner) el.updateBanner.hidden = true;
+}
+
+function showUpdateBanner(status) {
+  if (!el.updateBanner || !status?.available) return;
+  if (el.updateTitle) {
+    el.updateTitle.textContent = `StreamChat Hub ${status.latestVersion} disponible`;
+  }
+  if (el.updateText) {
+    el.updateText.textContent = `Tienes la ${status.currentVersion}. Descarga la nueva versión cuando quieras; no se actualiza sola.`;
+  }
+  el.updateBanner.hidden = false;
+}
+
+function setupUpdates() {
+  if (!window.streamChatApp?.isDesktop) {
+    hideUpdateBanner();
+    return;
+  }
+
+  const present = (status) => {
+    if (!status?.available || !status.tag) return;
+    let dismissed = "";
+    try {
+      dismissed = localStorage.getItem(updateDismissKey(status.tag)) || "";
+    } catch {
+      // sin almacenamiento: se muestra igualmente
+    }
+    if (!dismissed) showUpdateBanner(status);
+  };
+
+  el.updateDownloadBtn?.addEventListener("click", async () => {
+    try {
+      await window.streamChatApp.openUpdatePage();
+      hideUpdateBanner();
+    } catch (error) {
+      toast(`No se pudo abrir la descarga: ${error.message}`, "error");
+    }
+  });
+
+  el.updateDismissBtn?.addEventListener("click", () => {
+    const tag = el.updateBanner?.dataset.tag || "";
+    if (tag) {
+      try {
+        localStorage.setItem(updateDismissKey(tag), "1");
+      } catch {
+        // ignorar
+      }
+    }
+    hideUpdateBanner();
+  });
+
+  window.streamChatApp.onUpdate?.((status) => {
+    if (el.updateBanner && status?.tag) el.updateBanner.dataset.tag = status.tag;
+    present(status);
+  });
+
+  window.streamChatApp
+    .getUpdateStatus?.()
+    .then((status) => {
+      if (el.updateBanner && status?.tag) el.updateBanner.dataset.tag = status.tag;
+      present(status);
+    })
+    .catch(() => {
+      // sin conexión con GitHub: no molestar
+    });
+}
+
 async function init() {
   cacheElements();
   fillStaticIcons();
   bindUI();
+  setupUpdates();
   updatePauseButton();
   updateSoundButton();
   renderFilterChips();

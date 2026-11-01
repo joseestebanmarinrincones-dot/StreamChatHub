@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu, Tray, clipboard, dialog, globalShortcut, ipcMain, nativeImage, screen, session, shell } from "electron";
+import { app, BrowserWindow, Menu, Notification, Tray, clipboard, dialog, globalShortcut, ipcMain, nativeImage, screen, session, shell } from "electron";
 import fs from "node:fs";
 import net from "node:net";
 import path from "node:path";
@@ -17,6 +17,11 @@ const dataDir = path.join(app.getPath("appData"), "StreamChatHub");
 fs.mkdirSync(dataDir, { recursive: true });
 app.setPath("userData", dataDir);
 const OVERLAY_STATE_FILE = path.join(dataDir, "overlay-bounds.json");
+const UPDATE_STATE_FILE = path.join(dataDir, "update-state.json");
+const UPDATE_REPO = "joseestebanmarinrincones-dot/StreamChatHub";
+const UPDATE_API = `https://api.github.com/repos/${UPDATE_REPO}/releases/latest`;
+const UPDATE_PAGE = `https://github.com/${UPDATE_REPO}/releases/latest`;
+const UPDATE_INTERVAL = 6 * 60 * 60 * 1000;
 const OVERLAY_SIZES = {
   compact: { width: 340, height: 560 },
   medium: { width: 430, height: 720 },
@@ -34,6 +39,8 @@ let closeStarted = false;
 let overlayEditing = false;
 let overlayComposerOpen = false;
 let overlaySaveTimer = null;
+let updateStatus = null;
+let updateTimer = null;
 
 const gotLock = app.requestSingleInstanceLock();
 if (!gotLock) {
@@ -415,6 +422,157 @@ function openPreviewWindow() {
   return previewWindow;
 }
 
+function versionParts(value) {
+  return String(value || "")
+    .replace(/^v/i, "")
+    .split(".")
+    .slice(0, 3)
+    .map((part) => parseInt(part, 10) || 0);
+}
+
+function isNewerVersion(latest, current) {
+  const a = versionParts(latest);
+  const b = versionParts(current);
+  for (let i = 0; i < 3; i += 1) {
+    if (a[i] > b[i]) return true;
+    if (a[i] < b[i]) return false;
+  }
+  return false;
+}
+
+function readUpdateState() {
+  try {
+    return JSON.parse(fs.readFileSync(UPDATE_STATE_FILE, "utf8"));
+  } catch {
+    return {};
+  }
+}
+
+function writeUpdateState(state) {
+  try {
+    fs.writeFileSync(UPDATE_STATE_FILE, JSON.stringify(state, null, 2));
+  } catch {
+    // no bloquear la app
+  }
+}
+
+function showUpdateNotification(status) {
+  const state = readUpdateState();
+  if (state.lastNotifiedTag === status.tag) return;
+  if (!Notification.isSupported()) return;
+  try {
+    const notification = new Notification({
+      title: `StreamChat Hub ${status.latestVersion} disponible`,
+      body: "Hay una versión nueva. Haz clic para descargarla cuando quieras.",
+      icon: APP_ICON,
+    });
+    notification.on("click", () => {
+      shell.openExternal(status.url || UPDATE_PAGE).catch(() => {});
+    });
+    notification.show();
+    writeUpdateState({ ...state, lastNotifiedTag: status.tag, lastNotifiedAt: Date.now() });
+  } catch {
+    // si Windows no permite notificaciones, queda el aviso dentro de la app
+  }
+}
+
+async function checkForUpdates({ manual = false } = {}) {
+  const currentVersion = app.getVersion();
+  try {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 15000);
+    let response;
+    try {
+      response = await fetch(UPDATE_API, {
+        headers: {
+          Accept: "application/vnd.github+json",
+          "User-Agent": `StreamChatHub/${currentVersion}`,
+        },
+        signal: controller.signal,
+      });
+    } finally {
+      clearTimeout(timer);
+    }
+    if (!response.ok) throw new Error(`GitHub respondió HTTP ${response.status}`);
+    const release = await response.json();
+    const tag = String(release.tag_name || "");
+    const latestVersion = tag.replace(/^v/i, "");
+    if (!latestVersion) throw new Error("La release no tiene versión.");
+    const available = isNewerVersion(latestVersion, currentVersion);
+    updateStatus = {
+      available,
+      currentVersion,
+      latestVersion,
+      tag,
+      url: release.html_url || UPDATE_PAGE,
+      notes: String(release.body || "").slice(0, 4000),
+      publishedAt: release.published_at || "",
+      checkedAt: Date.now(),
+      error: "",
+    };
+    if (available) {
+      showUpdateNotification(updateStatus);
+      if (mainWindow && !mainWindow.isDestroyed()) {
+        mainWindow.webContents.send("update:available", updateStatus);
+      }
+    }
+    return updateStatus;
+  } catch (error) {
+    updateStatus = {
+      available: false,
+      currentVersion,
+      latestVersion: "",
+      tag: "",
+      url: UPDATE_PAGE,
+      notes: "",
+      checkedAt: Date.now(),
+      error: error?.message || String(error),
+    };
+    if (manual) return updateStatus;
+    return updateStatus;
+  }
+}
+
+async function manualUpdateCheck() {
+  const status = await checkForUpdates({ manual: true });
+  if (!status) return;
+  if (status.error) {
+    dialog.showErrorBox(
+      "Buscar actualizaciones",
+      `No se pudo comprobar la última versión.\n\n${status.error}`,
+    );
+    return;
+  }
+  if (status.available) {
+    const result = await dialog.showMessageBox({
+      type: "info",
+      title: "Actualización disponible",
+      message: `StreamChat Hub ${status.latestVersion} está disponible.`,
+      detail: `Tienes la versión ${status.currentVersion}. ¿Quieres abrir la página de descarga?`,
+      buttons: ["Descargar", "Ahora no"],
+      defaultId: 0,
+      cancelId: 1,
+    });
+    if (result.response === 0) shell.openExternal(status.url || UPDATE_PAGE).catch(() => {});
+    return;
+  }
+  dialog.showMessageBox({
+    type: "info",
+    title: "Buscar actualizaciones",
+    message: `Estás al día. Versión ${status.currentVersion}.`,
+  }).catch(() => {});
+}
+
+function startUpdateChecks() {
+  if (SMOKE) return;
+  setTimeout(() => {
+    checkForUpdates().catch(() => {});
+  }, 7000);
+  updateTimer = setInterval(() => {
+    checkForUpdates().catch(() => {});
+  }, UPDATE_INTERVAL);
+}
+
 function updateTrayMenu() {
   if (!tray) return;
   const overlayVisible = Boolean(overlayWindow && !overlayWindow.isDestroyed() && overlayWindow.isVisible());
@@ -451,6 +609,10 @@ function updateTrayMenu() {
           const port = serverModule?.getServerPort?.();
           if (port) clipboard.writeText(`http://localhost:${port}/overlay?obs=1`);
         },
+      },
+      {
+        label: "Buscar actualizaciones",
+        click: manualUpdateCheck,
       },
       {
         label: "Abrir carpeta de datos",
@@ -558,6 +720,16 @@ async function bootstrap() {
     ipcMain.handle("window:get-always-on-top", () => {
       return Boolean(mainWindow && !mainWindow.isDestroyed() && mainWindow.isAlwaysOnTop());
     });
+    ipcMain.handle("update:get", async () => {
+      return updateStatus || (await checkForUpdates());
+    });
+    ipcMain.handle("update:check", async () => {
+      return await checkForUpdates({ manual: true });
+    });
+    ipcMain.handle("update:open", () => {
+      shell.openExternal(updateStatus?.url || UPDATE_PAGE).catch(() => {});
+      return true;
+    });
 
     const shortcuts = [
       ["CommandOrControl+Alt+O", toggleOverlayWindow],
@@ -570,6 +742,7 @@ async function bootstrap() {
         console.warn(`No se pudo registrar el atajo ${accelerator}`);
       }
     }
+    startUpdateChecks();
   } catch (error) {
     dialog.showErrorBox(
       "StreamChat Hub",
@@ -586,6 +759,7 @@ app.on("before-quit", (event) => {
   if (closeStarted) return;
   closeStarted = true;
   clearTimeout(overlaySaveTimer);
+  clearInterval(updateTimer);
   saveOverlayBounds();
   try {
     globalShortcut.unregisterAll();

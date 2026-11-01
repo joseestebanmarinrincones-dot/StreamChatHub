@@ -86,6 +86,17 @@
       <div class="sidebar-scrim" id="sidebarScrim" hidden></div>
 
       <main class="main" id="chat">
+        <div class="update-banner" id="updateBanner" hidden>
+          <span class="update-banner-icon" data-icon="download"></span>
+          <div class="update-banner-copy">
+            <strong id="updateTitle">Nueva versión disponible</strong>
+            <span id="updateText">Descárgala cuando quieras.</span>
+          </div>
+          <div class="update-banner-actions">
+            <button class="btn btn-primary" id="updateDownloadBtn" type="button">Descargar</button>
+            <button class="btn btn-ghost" id="updateDismissBtn" type="button">Ahora no</button>
+          </div>
+        </div>
         <header class="topbar">
           <button class="icon-btn menu-btn" id="menuBtn" type="button" aria-label="Abrir menú">
             <span data-icon="menu"></span>
