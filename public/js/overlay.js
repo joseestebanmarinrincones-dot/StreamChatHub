@@ -36,7 +36,7 @@ function boolParam(name) {
   return params.get(name) !== "0" && params.get(name) !== "false";
 }
 
-const maxOverride = numberParam("max", 1, 50);
+const maxOverride = numberParam("max", 1, 100);
 const fontOverride = numberParam("font", 10, 48);
 const bgOverride = numberParam("bg", 0, 1);
 const widthOverride = numberParam("width", 240, 900);
@@ -55,6 +55,13 @@ if (lifetimeOverride !== undefined) queryOverrides.lifetimeSeconds = Math.round(
 if (platformOverride !== undefined) queryOverrides.showPlatform = platformOverride;
 if (badgesOverride !== undefined) queryOverrides.showBadges = badgesOverride;
 if (anchorOverride !== undefined) queryOverrides.anchor = anchorOverride;
+
+// El overlay de OBS se queda permanente. La ventana flotante conserva la duración normal.
+const isObsSource = params.get("obs") === "1" || /OBS/i.test(navigator.userAgent);
+if (isObsSource) {
+  queryOverrides.lifetimeSeconds = 0;
+  if (!params.has("max")) queryOverrides.maxMessages = 50;
+}
 
 const DEFAULTS = {
   maxMessages: 12,

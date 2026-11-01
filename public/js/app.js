@@ -1066,6 +1066,7 @@ function renderSettings() {
         <div class="field">
           <label for="overlay-max-messages">Máx. mensajes</label>
           <input id="overlay-max-messages" type="number" min="1" max="50" step="1" value="${Number(overlay.maxMessages) || 12}" />
+          <span class="hint">OBS usa 50 por defecto para no borrar el historial.</span>
         </div>
         <div class="field">
           <label for="overlay-font-size">Tamaño de letra (px)</label>
@@ -1078,6 +1079,7 @@ function renderSettings() {
         <div class="field">
           <label for="overlay-lifetime">Duración en pantalla (s)</label>
           <input id="overlay-lifetime" type="number" min="5" max="300" step="5" value="${Number(overlay.lifetimeSeconds) || 30}" />
+          <span class="hint">Solo afecta a la ventana flotante. El overlay de OBS no se desvanece.</span>
         </div>
         <div class="field">
           <label for="overlay-anchor">Posición</label>

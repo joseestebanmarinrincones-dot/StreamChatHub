@@ -449,7 +449,7 @@ function updateTrayMenu() {
         label: "Copiar URL del overlay para OBS",
         click: () => {
           const port = serverModule?.getServerPort?.();
-          if (port) clipboard.writeText(`http://localhost:${port}/overlay`);
+          if (port) clipboard.writeText(`http://localhost:${port}/overlay?obs=1`);
         },
       },
       {
@@ -543,7 +543,7 @@ async function bootstrap() {
     ipcMain.handle("overlay:copy-obs", () => {
       const port = serverModule?.getServerPort?.();
       if (!port) return false;
-      clipboard.writeText(`http://localhost:${port}/overlay`);
+      clipboard.writeText(`http://localhost:${port}/overlay?obs=1`);
       return true;
     });
     ipcMain.on("overlay:composer-end", () => {

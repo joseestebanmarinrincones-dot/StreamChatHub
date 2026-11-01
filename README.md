@@ -88,14 +88,16 @@ El botón de **chincheta** en la barra superior mantiene toda la app encima de o
 
 ### 3. OBS / Transparent Twitch Chat Overlay
 
-Para OBS, añade una fuente **Navegador** con la URL que aparece en **Compartir → Overlay para OBS** (normalmente `http://localhost:3000/overlay`, aunque el puerto puede variar). Copia siempre la URL desde la app.
+Para OBS, añade una fuente **Navegador** con la URL que aparece en **Compartir → Overlay para OBS** (normalmente `http://localhost:3000/overlay?obs=1`, aunque el puerto puede variar). Copia siempre la URL desde la app.
+
+El overlay de OBS **no se desvanece**: los mensajes se mantienen. La duración de **Ajustes → Overlay** solo afecta a la ventana flotante. El overlay de OBS guarda hasta 50 mensajes; los más antiguos se retiran cuando se supera ese límite para no salirse de la pantalla.
 
 Si usas **Transparent Twitch Chat Overlay**, añade una `Custom URL` con esa misma dirección. Así tienes el overlay también fuera de OBS.
 
 El overlay tiene fondo transparente y acepta parámetros:
 
 ```text
-/overlay?max=8&font=18&bg=0.28&width=420&lifetime=30&anchor=bottom-left
+/overlay?obs=1&max=50&font=18&bg=0.28&width=420&anchor=bottom-left
 ```
 
 ### Atajos de la app
@@ -116,7 +118,8 @@ Los atajos también están en el menú de la bandeja del sistema. `Ctrl + Alt + 
 | `font` | `18` | Tamaño de letra en píxeles. |
 | `bg` | `0.28` | Opacidad del fondo de cada mensaje (0 a 1). |
 | `width` | `420` | Ancho máximo de la lista. |
-| `lifetime` | `30` | Segundos que permanece un mensaje. `0` = no se borra. |
+| `lifetime` | `30` | Segundos de la ventana flotante. En OBS se fuerza `0` (permanente). |
+| `obs` | `1` | Fuerza el modo OBS: sin desvanecimiento y 50 mensajes por defecto. |
 | `anchor` | `bottom-left` | `bottom-left`, `bottom-right`, `top-left`, `top-right`. |
 | `platform` | `0` | Oculta el icono de plataforma. |
 | `badges` | `0` | Oculta las insignias. |
@@ -164,6 +167,7 @@ Puedes copiar `StreamChat Hub.exe` y enviarlo: es portátil y no necesita Node n
 ### Overlay
 
 - Máximo de mensajes, tamaño de letra, ancho, duración, posición y opacidad.
+- La **duración** solo afecta a la ventana flotante. El overlay de OBS no se desvanece.
 - Mostrar u ocultar iconos de plataforma e insignias.
 - Vista previa integrada.
 - **Copiar URL para OBS** en Compartir (también en la barra de edición del overlay).

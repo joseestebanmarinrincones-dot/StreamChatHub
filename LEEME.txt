@@ -70,6 +70,9 @@ OBS
 ---
 Fuente -> Navegador -> boton "Copiar URL para OBS" en Compartir.
 Fondo transparente, 1920x1080.
+El overlay de OBS NO se desvanece: los mensajes se mantienen.
+La URL lleva ?obs=1. La duracion de Ajustes solo afecta a la ventana
+flotante, no a OBS.
 La URL tambien se puede copiar desde la barra de edicion del overlay
 (Ctrl + Alt + E) o desde el menu de la bandeja.
 

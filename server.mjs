@@ -116,7 +116,7 @@ function buildShare() {
     lanUrls,
     primaryLanUrl: lanUrls[0] || "",
     overlayPath: "/overlay",
-    overlayUrl: `http://localhost:${PORT}/overlay`,
+    overlayUrl: `http://localhost:${PORT}/overlay?obs=1`,
     qrEndpoint: "/api/qr",
     tunnel: tunnel.snapshot(),
   };
@@ -558,7 +558,7 @@ function printBanner() {
     "============================================================",
     `  Chat local:      http://localhost:${PORT}`,
     `  Amigos (Wi-Fi):  ${lanUrls[0] || "No se detectó una red local"}`,
-    `  Overlay OBS:     http://localhost:${PORT}/overlay`,
+    `  Overlay OBS:     http://localhost:${PORT}/overlay?obs=1`,
     "",
     "  Configura tus canales en el botón Ajustes.",
     "  Deja esta ventana abierta mientras estás en directo.",
