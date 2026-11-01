@@ -1,0 +1,45 @@
+{
+  "channels": {
+    "twitch": "",
+    "kick": "",
+    "youtube": "",
+    "tiktok": ""
+  },
+  "kick": {
+    "channelId": 0,
+    "chatroomId": 0
+  },
+  "tiktok": {
+    "source": "direct",
+    "signApiKey": "",
+    "events": {
+      "joins": true,
+      "gifts": true,
+      "shares": true,
+      "follows": true,
+      "subscribes": true,
+      "likes": false
+    }
+  },
+  "tikfinity": {
+    "url": "ws://localhost:21213/"
+  },
+  "filters": {
+    "blockedUsers": [],
+    "ignoreCommands": true,
+    "maxMessageLength": 300
+  },
+  "overlay": {
+    "maxMessages": 12,
+    "fontSize": 18,
+    "backgroundOpacity": 0.28,
+    "showPlatform": true,
+    "showBadges": true,
+    "lifetimeSeconds": 30,
+    "width": 440,
+    "anchor": "bottom-left"
+  },
+  "ui": {
+    "showTimestamps": true
+  }
+}

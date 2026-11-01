@@ -1,0 +1,88 @@
+{
+  "name": "streamchat-hub",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Chat unificado de Twitch, Kick, YouTube y TikTok con overlay transparente para OBS y enlaces para compartir con amigos",
+  "author": "StreamChat Hub",
+  "main": "electron/main.mjs",
+  "license": "MIT",
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node --watch server.mjs",
+    "app": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder --win"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "qrcode": "^1.5.4",
+    "tiktok-live-connector": "^2.5.0",
+    "ws": "^8.22.1",
+    "youtube-chat": "^2.2.0"
+  },
+  "devDependencies": {
+    "electron": "^45.2.1",
+    "electron-builder": "^26.18.0"
+  },
+  "build": {
+    "appId": "com.streamchathub.app",
+    "productName": "StreamChat Hub",
+    "copyright": "Copyright © 2026 StreamChat Hub",
+    "asar": true,
+    "directories": {
+      "output": "release",
+      "buildResources": "build"
+    },
+    "files": [
+      "**/*",
+      "!config.json",
+      "!bin/**",
+      "!dist/**",
+      "!release/**",
+      "!*.bat",
+      "!*.md",
+      "!*.log",
+      "!LICENSE",
+      "!LEEME.txt",
+      "!_*"
+    ],
+    "extraResources": [
+      {
+        "from": "build/icon.png",
+        "to": "icon.png"
+      }
+    ],
+    "win": {
+      "icon": "build/icon.png",
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "portable": {
+      "artifactName": "StreamChatHub-${version}-portable.${ext}"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "StreamChat Hub",
+      "artifactName": "StreamChatHub-${version}-setup.${ext}"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+node_modules/
+config.json
+bin/
+release/
+dist/
+logs/
+*.log
+_screenshot*.png
+_settings.png
+_share.png
+_preview.png
+_overlay.png
+_mobile*.png
+_*.mjs

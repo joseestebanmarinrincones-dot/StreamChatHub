@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#00000000" />
+    <title>StreamChat Hub · Overlay</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="stylesheet" href="/css/overlay.css" />
+  </head>
+  <body>
+    <div class="overlay anchor-bottom-left" id="overlay">
+      <div class="overlay-status" id="overlayStatus" hidden></div>
+      <div class="overlay-list" id="overlayList" aria-live="polite"></div>
+    </div>
+
+    <div class="overlay-notifications" id="overlayNotifications" aria-live="polite"></div>
+
+    <div class="overlay-composer" id="overlayComposer" hidden>
+      <div class="overlay-composer-head">
+        <span>Mensaje local</span>
+        <small>Enter para enviar · Esc para cerrar</small>
+      </div>
+      <div class="overlay-composer-row">
+        <input id="overlayComposerInput" type="text" maxlength="300" autocomplete="off" placeholder="Escribe algo para tu overlay…" />
+        <button id="overlayComposerSend" type="button">Enviar</button>
+      </div>
+      <span class="overlay-composer-error" id="overlayComposerError" hidden></span>
+    </div>
+
+    <div class="overlay-editbar" id="overlayEditbar" hidden></div>
+
+    <script type="module" src="/js/overlay.js"></script>
+  </body>
+</html>

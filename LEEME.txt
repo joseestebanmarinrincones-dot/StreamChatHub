@@ -1,0 +1,88 @@
+﻿StreamChat Hub 1.0 - Aplicacion de escritorio
+===============================================
+
+ABRIR
+-----
+Haz doble clic en "StreamChat Hub.exe" (escritorio o release).
+Tambien puedes instalar release\StreamChatHub-1.0.0-setup.exe.
+Si ya tienes una version anterior abierta, cierrala antes de abrir esta.
+Version con TikFinity: abre "StreamChat Hub (TikFinity).exe"
+o el acceso directo "StreamChat Hub (TikFinity)" del escritorio.
+
+No hace falta abrir el navegador ni localhost.
+La primera vez Windows puede avisar de que el .exe no esta firmado:
+Mas informacion -> Ejecutar de todas formas.
+Si aparece el aviso del firewall, pulsa Permitir para compartir por Wi-Fi.
+
+CONFIGURAR
+----------
+1. Pulsa Ajustes.
+2. Escribe tus canales de Twitch, Kick, YouTube y TikTok.
+3. Guardar y reconectar.
+
+TWITCH:  tu_canal
+KICK:    tu_canal
+YOUTUBE: @tuCanal o la URL del directo
+TIKTOK:  tuusuario (debe estar en directo) o usa TikFinity
+
+TIKFINITY (TikTok)
+------------------
+Si ya usas TikFinity Desktop:
+1. Abre TikFinity y conecta tu directo de TikTok.
+   Comprueba que su Event API / API local esta activa.
+2. En StreamChat Hub: Ajustes -> TikTok.
+3. Fuente de TikTok: "TikFinity (API local)".
+4. URL: ws://localhost:21213/ (la de por defecto).
+5. Guardar.
+No hace falta rellenar el canal de TikTok. TikFinity debe seguir
+abierto durante el directo. Si cambias el puerto de su API, cambia
+la URL en Ajustes.
+
+OVERLAY ENCIMA DE TODO
+----------------------
+Boton "Overlay flotante" o Ctrl + Alt + O.
+Es una capa transparente, siempre encima y click-through.
+- Ctrl + Alt + O: mostrar u ocultar.
+- Ctrl + Alt + E: mover y cambiar tamano (arrastra la barra y pulsa Listo).
+- La posicion y el tamano se guardan.
+- La chincheta de la barra superior fija la ventana principal encima.
+
+ESCRIBIR DESDE EL OVERLAY
+-------------------------
+Pulsa F8 (o Ctrl + Alt + M), escribe y pulsa Enter.
+El mensaje es local: se ve en la app, en el overlay y en el enlace
+que compartes con tus amigos. NO se envia a Twitch/Kick/YouTube/TikTok.
+
+AVISOS DE TIKTOK
+----------------
+En Ajustes puedes activar o desactivar:
+- Entradas al directo
+- Regalos y donaciones
+- Compartidos
+- Nuevos seguidores
+- Suscripciones
+- Me gusta
+
+Aparecen como tarjetas simples en la esquina superior derecha del overlay.
+Hay un boton "Probar avisos" para verlos sin esperar.
+
+OBS
+---
+Fuente -> Navegador -> boton "Copiar URL para OBS" en Compartir.
+Fondo transparente, 1920x1080.
+La URL tambien se puede copiar desde la barra de edicion del overlay
+(Ctrl + Alt + E) o desde el menu de la bandeja.
+
+COMPARTIR CON AMIGOS
+--------------------
+Boton Compartir:
+- Misma Wi-Fi: enlace + codigo QR.
+- Internet: Crear enlace publico (Cloudflare Tunnel).
+Los invitados solo pueden leer, no enviar mensajes.
+
+DATOS
+-----
+La configuracion se guarda en:
+%APPDATA%\StreamChatHub\config.json
+
+Guia completa: README.md
