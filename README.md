@@ -2,6 +2,8 @@
 
 **Aplicación de escritorio para Windows** con chat unificado de **Twitch, Kick, YouTube y TikTok**, overlay transparente encima de otros programas y enlaces para compartir con amigos.
 
+[**Descargar la última versión**](https://github.com/joseestebanmarinrincones-dot/StreamChatHub/releases/latest) · [Código fuente](https://github.com/joseestebanmarinrincones-dot/StreamChatHub)
+
 Está inspirada en [Transparent Twitch Chat Overlay](https://github.com/baffler/Transparent-Twitch-Chat-Overlay) de baffler, pero reúne las cuatro plataformas en una sola ventana y añade overlay nativo, enlace público y QR.
 
 > **Lectura para las plataformas, chat local para ti.** No envía mensajes a Twitch/Kick/YouTube/TikTok, no pide contraseñas y no inicia sesión. El compositor del overlay crea mensajes locales que se ven en la app, en el overlay y en el enlace que compartes.
