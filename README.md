@@ -224,6 +224,18 @@ Resultados:
 - `release\StreamChatHub-1.1.0-portable.exe`
 - `release\StreamChatHub-1.1.0-setup.exe`
 
+### Publicar una actualización
+
+El aviso se basa en la última release de GitHub y en la versión de `package.json`:
+
+1. Sube `version` en `package.json` y `package-lock.json` a un número mayor (por ejemplo `1.2.0`).
+2. Actualiza `VERSION` en `server.mjs` y los nombres de los `.exe` en `Iniciar-StreamChat.bat`, README y LEEME.
+3. Ejecuta `npm run dist`.
+4. Crea una release en GitHub con el tag `v1.2.0` y adjunta el portable y el instalador.
+5. Quien tenga la 1.1.0 o posterior recibirá el aviso al abrir la app o en la siguiente comprobación (cada 6 horas).
+
+No hace falta publicar en Microsoft Store ni forzar la actualización: el usuario decide cuándo descargarla.
+
 El modo navegador para desarrollo sigue disponible:
 
 ```bat
