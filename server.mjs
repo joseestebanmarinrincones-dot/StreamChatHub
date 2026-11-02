@@ -4,7 +4,6 @@ import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
-import QRCode from "qrcode";
 import { WebSocketServer, WebSocket } from "ws";
 import { ConfigStore, publicSettings } from "./src/config.mjs";
 import { ChatHub } from "./src/hub.mjs";
@@ -18,7 +17,7 @@ const DATA_DIR = process.env.STREAMCHAT_DATA_DIR
   : ROOT;
 const CONFIG_PATH = path.join(DATA_DIR, "config.json");
 const PORT = clampNumber(process.env.PORT || 3000, 1, 65535, 3000);
-const VERSION = "1.1.0";
+const VERSION = "1.1.1";
 const HOST = "0.0.0.0";
 const IS_MAIN =
   Boolean(process.argv[1]) &&
@@ -402,6 +401,7 @@ async function handleRequest(req, res) {
         throw new HttpError(400, "URL no válida para el código QR.");
       }
       const size = Math.round(clampNumber(url.searchParams.get("size"), 120, 600, 240));
+      const { default: QRCode } = await import("qrcode");
       const png = await QRCode.toBuffer(text, {
         type: "png",
         width: size,
@@ -554,7 +554,7 @@ function printBanner() {
   const lines = [
     "",
     "============================================================",
-    "  StreamChat Hub 1.0  ·  Twitch + Kick + YouTube + TikTok",
+    "  StreamChat Hub " + VERSION + "  ·  Twitch + Kick + YouTube + TikTok",
     "============================================================",
     `  Chat local:      http://localhost:${PORT}`,
     `  Amigos (Wi-Fi):  ${lanUrls[0] || "No se detectó una red local"}`,
@@ -575,6 +575,7 @@ function printBanner() {
 
 let started = false;
 let closing = null;
+let hubStarted = false;
 
 server.on("error", (error) => {
   if (!started) return;
@@ -598,8 +599,17 @@ function openBrowserWindow() {
   }
 }
 
-export function startServer({ openBrowser = true } = {}) {
-  if (started) return Promise.resolve({ port: PORT, url: `http://localhost:${PORT}` });
+export function startConnections() {
+  if (hubStarted) return;
+  hubStarted = true;
+  hub.start();
+}
+
+export function startServer({ openBrowser = true, startHub = true } = {}) {
+  if (started) {
+    if (startHub) startConnections();
+    return Promise.resolve({ port: PORT, url: `http://localhost:${PORT}` });
+  }
   return new Promise((resolve, reject) => {
     const onError = (error) => {
       server.off("listening", onListening);
@@ -609,7 +619,7 @@ export function startServer({ openBrowser = true } = {}) {
       server.off("error", onError);
       started = true;
       printBanner();
-      hub.start();
+      if (startHub) startConnections();
       if (openBrowser) openBrowserWindow();
       resolve({ port: PORT, url: `http://localhost:${PORT}` });
     };
@@ -623,6 +633,7 @@ export async function closeServer() {
   if (closing) return closing;
   if (!started && !server.listening) return;
   started = false;
+  hubStarted = false;
   closing = (async () => {
     clearInterval(heartbeat);
     clearInterval(statsTimer);

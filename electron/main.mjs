@@ -678,7 +678,7 @@ async function bootstrap() {
     process.env.NO_OPEN = "1";
 
     serverModule = await import(pathToFileURL(path.join(APP_ROOT, "server.mjs")).href);
-    await serverModule.startServer({ openBrowser: false });
+    await serverModule.startServer({ openBrowser: false, startHub: false });
 
     Menu.setApplicationMenu(null);
     session.defaultSession.setPermissionRequestHandler((_webContents, _permission, callback) => {
@@ -687,6 +687,20 @@ async function bootstrap() {
 
     createTray();
     createMainWindow();
+    const startConnections = () => {
+      try {
+        serverModule?.startConnections?.();
+      } catch {
+        // la app sigue funcionando aunque una plataforma falle
+      }
+    };
+    if (mainWindow) {
+      mainWindow.webContents.once("did-finish-load", () => {
+        setTimeout(startConnections, 200);
+      });
+    }
+    const connectionsFallback = setTimeout(startConnections, 5000);
+    connectionsFallback.unref?.();
     ipcMain.handle("overlay:open", () => {
       const window = createOverlayWindow();
       if (window && !window.isVisible()) window.showInactive();

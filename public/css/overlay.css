@@ -234,6 +234,73 @@ body.hide-badges .ol-badges {
   border-color: rgba(167, 139, 250, 0.4);
 }
 
+.overlay-viewers {
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  z-index: 5;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 7px;
+  padding: 6px 12px 7px 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  background: rgba(5, 6, 10, 0.72);
+  box-shadow:
+    0 8px 28px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  font-variant-numeric: tabular-nums;
+  backdrop-filter: blur(10px);
+  pointer-events: none;
+  transition: opacity 200ms ease;
+}
+
+.overlay-viewers.is-zero {
+  opacity: 0.72;
+}
+
+.overlay.anchor-top-left .overlay-viewers {
+  top: auto;
+  bottom: 18px;
+}
+
+body.show-status .overlay.anchor-bottom-left .overlay-viewers,
+body.show-status .overlay.anchor-bottom-right .overlay-viewers {
+  top: 52px;
+}
+
+.ol-viewers-icon {
+  width: 16px;
+  height: 16px;
+  display: grid;
+  place-items: center;
+  align-self: center;
+  color: #ff5c72;
+  filter: drop-shadow(0 0 6px rgba(255, 92, 114, 0.5));
+}
+
+.ol-viewers-icon .icon {
+  width: 15px;
+  height: 15px;
+}
+
+.ol-viewers-count {
+  color: #ffffff;
+  font-size: calc(var(--overlay-font) * 1.08);
+  font-weight: 750;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.ol-viewers-label {
+  color: #a9a4b8;
+  font-size: calc(var(--overlay-font) * 0.5);
+  font-weight: 650;
+  line-height: 1;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
 .overlay-status {
   position: absolute;
   top: 14px;
@@ -304,6 +371,23 @@ body.pip-mode .overlay-status {
   top: 8px;
   left: 8px;
   font-size: 6.5px;
+}
+
+body.pip-mode .overlay-viewers {
+  top: 8px;
+  left: 8px;
+  gap: 5px;
+  padding: 4px 9px 5px 7px;
+}
+
+body.pip-mode .overlay.anchor-top-left .overlay-viewers {
+  top: auto;
+  bottom: 8px;
+}
+
+body.pip-mode.show-status .overlay.anchor-bottom-left .overlay-viewers,
+body.pip-mode.show-status .overlay.anchor-bottom-right .overlay-viewers {
+  top: 34px;
 }
 
 /* -------------------------------------------------- notificaciones TikTok */

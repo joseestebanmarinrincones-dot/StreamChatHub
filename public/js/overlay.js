@@ -11,6 +11,9 @@ import {
 const overlay = document.getElementById("overlay");
 const list = document.getElementById("overlayList");
 const statusEl = document.getElementById("overlayStatus");
+const viewersEl = document.getElementById("overlayViewers");
+const viewersIcon = document.getElementById("overlayViewersIcon");
+const viewersCount = document.getElementById("overlayViewersCount");
 const notificationsEl = document.getElementById("overlayNotifications");
 const composerEl = document.getElementById("overlayComposer");
 const composerInput = document.getElementById("overlayComposerInput");
@@ -43,6 +46,7 @@ const widthOverride = numberParam("width", 240, 900);
 const lifetimeOverride = numberParam("lifetime", 0, 300);
 const platformOverride = boolParam("platform");
 const badgesOverride = boolParam("badges");
+const viewersOverride = boolParam("viewers");
 const anchorOverride = ["bottom-left", "bottom-right", "top-left", "top-right"].includes(params.get("anchor"))
   ? params.get("anchor")
   : undefined;
@@ -54,6 +58,7 @@ if (widthOverride !== undefined) queryOverrides.width = Math.round(widthOverride
 if (lifetimeOverride !== undefined) queryOverrides.lifetimeSeconds = Math.round(lifetimeOverride);
 if (platformOverride !== undefined) queryOverrides.showPlatform = platformOverride;
 if (badgesOverride !== undefined) queryOverrides.showBadges = badgesOverride;
+if (viewersOverride !== undefined) queryOverrides.showViewers = viewersOverride;
 if (anchorOverride !== undefined) queryOverrides.anchor = anchorOverride;
 
 // El overlay de OBS se queda permanente. La ventana flotante conserva la duración normal.
@@ -69,6 +74,7 @@ const DEFAULTS = {
   backgroundOpacity: 0.28,
   showPlatform: true,
   showBadges: true,
+  showViewers: true,
   lifetimeSeconds: 30,
   width: 440,
   anchor: "bottom-left",
@@ -77,7 +83,9 @@ const DEFAULTS = {
 let config = { ...DEFAULTS, ...queryOverrides };
 let demoOnly = false;
 let statuses = {};
+const viewerNumberFormat = new Intl.NumberFormat("es-ES");
 
+if (viewersIcon) viewersIcon.innerHTML = icon("eye", "icon");
 if (isPip) document.body.classList.add("pip-mode");
 
 function applyConfig(overlaySettings = {}) {
@@ -92,8 +100,11 @@ function applyConfig(overlaySettings = {}) {
   overlay.className = `overlay anchor-${config.anchor}`;
   document.body.classList.toggle("hide-platform", config.showPlatform === false);
   document.body.classList.toggle("hide-badges", config.showBadges === false);
+  document.body.classList.toggle("hide-viewers", config.showViewers === false);
   statusEl.hidden = !showStatus;
+  document.body.classList.toggle("show-status", showStatus);
   trimMessages();
+  updateViewers();
 }
 
 function trimMessages() {
@@ -104,6 +115,39 @@ function trimMessages() {
     clearTimeout(first._removeTimer);
     first.remove();
   }
+}
+
+function formatViewerTotal(value) {
+  const total = Math.max(0, Math.floor(Number(value) || 0));
+  if (total >= 1_000_000) return `${Math.floor(total / 1_000_000)}m`;
+  if (total >= 1_000) return `${Math.floor(total / 1_000)}k`;
+  return String(total);
+}
+
+function updateViewers() {
+  if (!viewersEl) return;
+  if (config.showViewers === false) {
+    viewersEl.hidden = true;
+    return;
+  }
+  let total = 0;
+  const breakdown = [];
+  for (const platform of ["twitch", "kick", "youtube", "tiktok"]) {
+    const status = statuses[platform];
+    if (!status || status.state !== "connected") continue;
+    const viewers = Math.max(0, Math.round(Number(status.viewers) || 0));
+    total += viewers;
+    if (viewers > 0) {
+      breakdown.push(`${PLATFORM_META[platform]?.label || platform}: ${viewerNumberFormat.format(viewers)}`);
+    }
+  }
+  if (isDemo && total === 0) total = 1248;
+  viewersEl.hidden = false;
+  viewersEl.classList.toggle("is-zero", total === 0);
+  if (viewersCount) viewersCount.textContent = formatViewerTotal(total);
+  viewersEl.title = breakdown.length
+    ? `Espectadores conectados · ${breakdown.join(" · ")}`
+    : "Espectadores en todas las plataformas";
 }
 
 function updateStatus() {
@@ -484,6 +528,7 @@ const socket = createChatSocket({
     if (!status?.platform) return;
     statuses[status.platform] = status;
     updateStatus();
+    updateViewers();
   },
   onCleared: () => {
     clearMessages();

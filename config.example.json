@@ -35,6 +35,7 @@
     "backgroundOpacity": 0.28,
     "showPlatform": true,
     "showBadges": true,
+    "showViewers": true,
     "lifetimeSeconds": 30,
     "width": 440,
     "anchor": "bottom-left"

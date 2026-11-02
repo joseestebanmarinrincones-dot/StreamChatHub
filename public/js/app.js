@@ -1105,6 +1105,11 @@ function renderSettings() {
             <input id="overlay-badges" type="checkbox" ${overlay.showBadges !== false ? "checked" : ""} />
             <span class="switch"></span>
           </label>
+          <label class="switch-field">
+            <span><strong>Espectadores totales</strong><small>Suma los espectadores de todas las plataformas conectadas</small></span>
+            <input id="overlay-viewers" type="checkbox" ${overlay.showViewers !== false ? "checked" : ""} />
+            <span class="switch"></span>
+          </label>
         </div>
       </div>
       <div class="share-actions">
@@ -1202,6 +1207,7 @@ function collectSettings() {
       backgroundOpacity: Number(value("overlay-opacity")) || 0,
       showPlatform: checked("overlay-platform"),
       showBadges: checked("overlay-badges"),
+      showViewers: checked("overlay-viewers"),
     },
     ui: {
       showTimestamps: checked("show-timestamps"),

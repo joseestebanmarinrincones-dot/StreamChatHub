@@ -77,10 +77,13 @@ export class KickConnector extends BaseConnector {
     this.clientId = crypto.randomUUID();
     this.serverConnected = false;
     this.meta = {};
+    this.viewerTimer = null;
+    this.viewerBusy = false;
   }
 
   connect() {
     this.clearReconnect();
+    this.stopViewerTimer();
     this._connect().catch((error) => {
       const message = formatError(error);
       this.lastError = message;
@@ -290,6 +293,7 @@ export class KickConnector extends BaseConnector {
       };
       const suffix = this.meta.live === false ? " (canal sin directo)" : "";
       this.setStatus("connected", `Kick #${this.channel} conectado${suffix}`, extra);
+      this.startViewerTimer();
       return;
     }
 
@@ -393,8 +397,41 @@ export class KickConnector extends BaseConnector {
     }
   }
 
+  startViewerTimer() {
+    this.stopViewerTimer();
+    this.viewerTimer = setInterval(() => this.refreshViewers(), 60000);
+    this.viewerTimer.unref?.();
+  }
+
+  stopViewerTimer() {
+    if (!this.viewerTimer) return;
+    clearInterval(this.viewerTimer);
+    this.viewerTimer = null;
+  }
+
+  async refreshViewers() {
+    if (!this.running || this.viewerBusy) return;
+    this.viewerBusy = true;
+    try {
+      await this.resolveChannel();
+      if (!this.running) return;
+      const extra = {
+        live: this.meta.live === true,
+        title: this.meta.title || "",
+        viewers: this.meta.viewers || 0,
+      };
+      const suffix = this.meta.live === false ? " (canal sin directo)" : "";
+      this.setStatus("connected", `Kick #${this.channel} conectado${suffix}`, extra);
+    } catch {
+      // Se conserva el último número conocido si Kick limita la consulta.
+    } finally {
+      this.viewerBusy = false;
+    }
+  }
+
   close() {
     this.stopWatchdog();
+    this.stopViewerTimer();
     const ws = this.ws;
     this.ws = null;
     if (ws) {

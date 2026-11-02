@@ -57,6 +57,20 @@ function extractChannelId(html) {
   return match?.[1] ?? "";
 }
 
+function extractViewerCount(html) {
+  // YouTube muestra los espectadores simultáneos en originalViewCount.
+  const original = html.match(/"originalViewCount"\s*:\s*"(\d+)"/);
+  if (original) return Number(original[1]) || 0;
+  const runs = html.match(
+    /"viewCount"\s*:\s*\{\s*"runs"\s*:\s*\[\s*\{\s*"text"\s*:\s*"([^"]+)"\s*\}\s*,\s*\{\s*"text"\s*:\s*"[^"]*watching[^"]*"/i,
+  );
+  if (runs) {
+    const digits = runs[1].replace(/[^\d]/g, "");
+    return Number(digits) || 0;
+  }
+  return 0;
+}
+
 function partsFromYouTube(item) {
   const parts = [];
   for (const part of item.message ?? []) {
@@ -93,6 +107,9 @@ export class YouTubeConnector extends BaseConnector {
     this.inputKind = "channel";
     this.title = "";
     this.channelId = "";
+    this.initialViewers = 0;
+    this.viewerTimer = null;
+    this.viewerBusy = false;
   }
 
   connect() {
@@ -115,6 +132,7 @@ export class YouTubeConnector extends BaseConnector {
     this.videoId = resolved.videoId || "";
     this.title = resolved.title || "";
     this.channelId = resolved.channelId || this.channelId;
+    this.initialViewers = resolved.viewers || 0;
 
     if (!resolved.videoId) {
       this.setStatus(
@@ -135,6 +153,7 @@ export class YouTubeConnector extends BaseConnector {
 
     if (directVideo) {
       let title = "";
+      let viewers = 0;
       try {
         const watch = await fetchText(
           `https://www.youtube.com/watch?v=${directVideo}`,
@@ -148,6 +167,7 @@ export class YouTubeConnector extends BaseConnector {
           15000,
         );
         title = pageTitle(watch.text).slice(0, 160);
+        viewers = extractViewerCount(watch.text);
       } catch {
         // El chat puede funcionar aunque no se pueda leer la portada.
       }
@@ -157,6 +177,7 @@ export class YouTubeConnector extends BaseConnector {
         title,
         channelId: "",
         live: true,
+        viewers,
       };
     }
 
@@ -221,6 +242,7 @@ export class YouTubeConnector extends BaseConnector {
       channelId,
       title: videoId ? pageTitle(html).slice(0, 160) : "",
       live: Boolean(videoId),
+      viewers: videoId ? extractViewerCount(html) : 0,
     };
   }
 
@@ -241,8 +263,14 @@ export class YouTubeConnector extends BaseConnector {
       this.setStatus(
         "connected",
         this.title ? `YouTube conectado: ${this.title}` : "YouTube conectado",
-        { live: true, title: this.title, videoId: id || videoId },
+        {
+          live: true,
+          title: this.title,
+          videoId: id || videoId,
+          viewers: this.initialViewers || 0,
+        },
       );
+      this.startViewerTimer(id || videoId);
     });
 
     chat.on("chat", (item) => {
@@ -282,6 +310,7 @@ export class YouTubeConnector extends BaseConnector {
   }
 
   handleOffline(message, isError = false) {
+    this.stopViewerTimer();
     if (this.inputKind === "channel") {
       this.setStatus("offline", `${message} Se comprobará otra vez en 60 s.`, { live: false });
       this.scheduleRetry(
@@ -324,7 +353,54 @@ export class YouTubeConnector extends BaseConnector {
     });
   }
 
+  startViewerTimer(videoId) {
+    this.stopViewerTimer();
+    if (!videoId) return;
+    this.viewerTimer = setInterval(() => this.refreshViewers(videoId), 60000);
+    this.viewerTimer.unref?.();
+  }
+
+  stopViewerTimer() {
+    if (!this.viewerTimer) return;
+    clearInterval(this.viewerTimer);
+    this.viewerTimer = null;
+  }
+
+  async refreshViewers(videoId) {
+    if (!this.running || this.viewerBusy || this.state !== "connected") return;
+    this.viewerBusy = true;
+    try {
+      const page = await fetchText(
+        `https://www.youtube.com/watch?v=${videoId}`,
+        {
+          headers: {
+            "User-Agent": USER_AGENT,
+            "Accept-Language": "en-US,en;q=0.9",
+            Cookie: "CONSENT=YES+cb; SOCS=CAI",
+          },
+        },
+        15000,
+      );
+      if (!this.running || this.videoId !== videoId || this.state !== "connected") return;
+      this.setStatus(
+        "connected",
+        this.title ? `YouTube conectado: ${this.title}` : "YouTube conectado",
+        {
+          live: true,
+          title: this.title,
+          videoId,
+          viewers: extractViewerCount(page.text),
+        },
+      );
+    } catch {
+      // Si YouTube limita la consulta, se conserva el último número.
+    } finally {
+      this.viewerBusy = false;
+    }
+  }
+
   close() {
+    this.stopViewerTimer();
     const chat = this.chat;
     this.chat = null;
     if (chat) {

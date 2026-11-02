@@ -3,7 +3,6 @@ import { EventEmitter } from "node:events";
 import { TwitchConnector } from "./connectors/twitch.mjs";
 import { KickConnector } from "./connectors/kick.mjs";
 import { YouTubeConnector } from "./connectors/youtube.mjs";
-import { TikTokConnector } from "./connectors/tiktok.mjs";
 import { TikFinityConnector } from "./connectors/tikfinity.mjs";
 import { effectiveTikTokKey } from "./config.mjs";
 import {
@@ -102,6 +101,7 @@ export class ChatHub extends EventEmitter {
     this.settings = store.settings;
     this.port = options.port ?? 3000;
     this.connectors = new Map();
+    this.startTokens = new Map();
     this.messages = [];
     this.seenIds = new Set();
     this.seenQueue = [];
@@ -184,25 +184,32 @@ export class ChatHub extends EventEmitter {
       return;
     }
 
+    const token = (this.startTokens.get(platform) || 0) + 1;
+    this.startTokens.set(platform, token);
+
+    if (platform === "tiktok" && !usingTikFinity) {
+      this.updateStatus(platform, {
+        channel,
+        state: "connecting",
+        message: "Iniciando conexión...",
+        live: false,
+        title: "",
+        viewers: 0,
+      });
+      this._startTikTokConnector(channel, token);
+      return;
+    }
+
     let connector;
     if (platform === "twitch") connector = new TwitchConnector(channel, this);
     if (platform === "kick") connector = new KickConnector(channel, this, { kick: this.settings.kick });
     if (platform === "youtube") connector = new YouTubeConnector(channel, this);
     if (platform === "tiktok") {
-      if (usingTikFinity) {
-        connector = new TikFinityConnector(channel, this, {
-          tiktok: { events: this.settings.tiktok.events },
-          tikfinity: this.settings.tikfinity,
-          streamer: this.settings.channels.tiktok,
-        });
-      } else {
-        connector = new TikTokConnector(channel, this, {
-          tiktok: {
-            signApiKey: effectiveTikTokKey(this.settings),
-            events: this.settings.tiktok.events,
-          },
-        });
-      }
+      connector = new TikFinityConnector(channel, this, {
+        tiktok: { events: this.settings.tiktok.events },
+        tikfinity: this.settings.tikfinity,
+        streamer: this.settings.channels.tiktok,
+      });
     }
     if (!connector) return;
 
@@ -225,7 +232,32 @@ export class ChatHub extends EventEmitter {
     }
   }
 
+  async _startTikTokConnector(channel, token) {
+    try {
+      // Se carga solo cuando TikTok directo está en uso: ahorra ~2 s al iniciar.
+      const { TikTokConnector } = await import("./connectors/tiktok.mjs");
+      if (this.startTokens.get("tiktok") !== token) return;
+      if (this.settings.tiktok.source === "tikfinity") return;
+      if (this.settings.channels.tiktok !== channel) return;
+      const connector = new TikTokConnector(channel, this, {
+        tiktok: {
+          signApiKey: effectiveTikTokKey(this.settings),
+          events: this.settings.tiktok.events,
+        },
+      });
+      this.connectors.set("tiktok", connector);
+      connector.start();
+    } catch (error) {
+      if (this.startTokens.get("tiktok") !== token) return;
+      this.updateStatus("tiktok", {
+        state: "error",
+        message: cleanText(error?.message || "No se pudo iniciar TikTok.", 500),
+      });
+    }
+  }
+
   _stopConnector(platform) {
+    this.startTokens.set(platform, (this.startTokens.get(platform) || 0) + 1);
     const connector = this.connectors.get(platform);
     if (!connector) return;
     try {

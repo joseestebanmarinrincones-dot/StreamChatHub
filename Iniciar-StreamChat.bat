@@ -4,8 +4,8 @@ chcp 65001 >nul
 cd /d "%~dp0"
 title StreamChat Hub
 
-if exist "release\StreamChatHub-1.1.0-portable.exe" (
-  start "" "release\StreamChatHub-1.1.0-portable.exe"
+if exist "release\StreamChatHub-1.1.1-portable.exe" (
+  start "" "release\StreamChatHub-1.1.1-portable.exe"
   exit /b 0
 )
 

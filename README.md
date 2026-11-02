@@ -1,4 +1,4 @@
-﻿# StreamChat Hub
+# StreamChat Hub
 
 **Aplicación de escritorio para Windows** con chat unificado de **Twitch, Kick, YouTube y TikTok**, overlay transparente encima de otros programas y enlaces para compartir con amigos.
 
@@ -17,8 +17,8 @@ Está inspirada en [Transparent Twitch Chat Overlay](https://github.com/baffler/
 Tienes varias formas:
 
 - **`StreamChat Hub.exe`** en el escritorio.
-- `release\StreamChatHub-1.1.0-portable.exe` dentro del proyecto. Es portátil: no necesita instalación.
-- `release\StreamChatHub-1.1.0-setup.exe` si prefieres instalarla como programa normal.
+- `release\StreamChatHub-1.1.1-portable.exe` dentro del proyecto. Es portátil: no necesita instalación.
+- `release\StreamChatHub-1.1.1-setup.exe` si prefieres instalarla como programa normal.
 
 La primera vez Windows puede mostrar “Windows protegió tu PC” porque el ejecutable no tiene firma digital. Pulsa **Más información → Ejecutar de todas formas**.
 
@@ -100,6 +100,8 @@ Para OBS, añade una fuente **Navegador** con la URL que aparece en **Compartir 
 
 El overlay de OBS **no se desvanece**: los mensajes se mantienen. La duración de **Ajustes → Overlay** solo afecta a la ventana flotante. El overlay de OBS guarda hasta 50 mensajes; los más antiguos se retiran cuando se supera ese límite para no salirse de la pantalla.
 
+El overlay muestra un contador con el **total de espectadores de todas las plataformas conectadas**. Suma Twitch, Kick, YouTube y TikTok/TikFinity, y se actualiza solo cuando cambian los datos. El número se abrevia: `999`, `1k`, `2k`… `999k`, `1m`, `2m`. Puedes ocultarlo en **Ajustes → Overlay → Espectadores totales** o con `?viewers=0` en la URL.
+
 Si usas **Transparent Twitch Chat Overlay**, añade una `Custom URL` con esa misma dirección. Así tienes el overlay también fuera de OBS.
 
 El overlay tiene fondo transparente y acepta parámetros:
@@ -131,6 +133,7 @@ Los atajos también están en el menú de la bandeja del sistema. `Ctrl + Alt + 
 | `anchor` | `bottom-left` | `bottom-left`, `bottom-right`, `top-left`, `top-right`. |
 | `platform` | `0` | Oculta el icono de plataforma. |
 | `badges` | `0` | Oculta las insignias. |
+| `viewers` | `0` | Oculta el total de espectadores. |
 | `status` | `1` | Muestra el estado de las plataformas. |
 | `demo` | `1` | Mensajes de ejemplo si el chat está vacío. |
 
@@ -176,6 +179,7 @@ Puedes copiar `StreamChat Hub.exe` y enviarlo: es portátil y no necesita Node n
 
 - Máximo de mensajes, tamaño de letra, ancho, duración, posición y opacidad.
 - La **duración** solo afecta a la ventana flotante. El overlay de OBS no se desvanece.
+- **Espectadores totales**: suma los espectadores de Twitch, Kick, YouTube y TikTok/TikFinity. Se puede ocultar.
 - Mostrar u ocultar iconos de plataforma e insignias.
 - Vista previa integrada.
 - **Copiar URL para OBS** en Compartir (también en la barra de edición del overlay).
@@ -221,8 +225,8 @@ npm run dist       REM genera los .exe en release\
 
 Resultados:
 
-- `release\StreamChatHub-1.1.0-portable.exe`
-- `release\StreamChatHub-1.1.0-setup.exe`
+- `release\StreamChatHub-1.1.1-portable.exe`
+- `release\StreamChatHub-1.1.1-setup.exe`
 
 ### Publicar una actualización
 
