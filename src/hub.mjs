@@ -281,6 +281,9 @@ export class ChatHub extends EventEmitter {
     next.live = Boolean(next.live);
     next.message = cleanText(next.message, 600);
     next.title = cleanText(next.title, 200);
+    if ((next.state === "offline" || next.state === "disabled") && patch.viewers === undefined) {
+      next.viewers = 0;
+    }
     const changed =
       !previous ||
       previous.state !== next.state ||

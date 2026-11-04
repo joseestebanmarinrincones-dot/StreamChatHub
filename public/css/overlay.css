@@ -240,8 +240,9 @@ body.hide-badges .ol-badges {
   left: 18px;
   z-index: 5;
   display: inline-flex;
-  align-items: baseline;
-  gap: 7px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
   padding: 6px 12px 7px 10px;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 999px;
@@ -259,14 +260,75 @@ body.hide-badges .ol-badges {
   opacity: 0.72;
 }
 
+.ol-viewers-main {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+}
+
+.ol-viewers-breakdown {
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  align-items: center;
+  gap: 4px 8px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  color: #a9a4b8;
+  font-size: calc(var(--overlay-font) * 0.48);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+.ol-viewers-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  color: rgba(255, 255, 255, 0.74);
+  white-space: nowrap;
+}
+
+.ol-viewers-platform {
+  width: 10px;
+  height: 10px;
+  display: grid;
+  place-items: center;
+  color: var(--platform-color, #ffffff);
+}
+
+.ol-viewers-platform .icon {
+  width: 10px;
+  height: 10px;
+}
+
 .overlay.anchor-top-left .overlay-viewers {
   top: auto;
   bottom: 18px;
 }
 
-body.show-status .overlay.anchor-bottom-left .overlay-viewers,
-body.show-status .overlay.anchor-bottom-right .overlay-viewers {
+body.show-status:not(.floating-window) .overlay.anchor-bottom-left .overlay-viewers,
+body.show-status:not(.floating-window) .overlay.anchor-bottom-right .overlay-viewers {
   top: 52px;
+}
+
+body.floating-window .overlay-viewers,
+body.floating-window .overlay.anchor-top-left .overlay-viewers,
+body.floating-window .overlay.anchor-top-right .overlay-viewers {
+  top: 18px;
+  bottom: auto;
+  left: auto;
+  right: 18px;
+  align-items: flex-end;
+}
+
+body.floating-window .ol-viewers-main,
+body.floating-window .ol-viewers-breakdown {
+  justify-content: flex-end;
+}
+
+body.floating-window .overlay-notifications {
+  top: 82px;
 }
 
 .ol-viewers-icon {
@@ -375,19 +437,15 @@ body.pip-mode .overlay-status {
 
 body.pip-mode .overlay-viewers {
   top: 8px;
-  left: 8px;
+  right: 8px;
+  bottom: auto;
+  left: auto;
   gap: 5px;
   padding: 4px 9px 5px 7px;
 }
 
-body.pip-mode .overlay.anchor-top-left .overlay-viewers {
-  top: auto;
-  bottom: 8px;
-}
-
-body.pip-mode.show-status .overlay.anchor-bottom-left .overlay-viewers,
-body.pip-mode.show-status .overlay.anchor-bottom-right .overlay-viewers {
-  top: 34px;
+body.pip-mode.floating-window .overlay-notifications {
+  top: 72px;
 }
 
 /* -------------------------------------------------- notificaciones TikTok */

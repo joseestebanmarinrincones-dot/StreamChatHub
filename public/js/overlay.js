@@ -14,6 +14,7 @@ const statusEl = document.getElementById("overlayStatus");
 const viewersEl = document.getElementById("overlayViewers");
 const viewersIcon = document.getElementById("overlayViewersIcon");
 const viewersCount = document.getElementById("overlayViewersCount");
+const viewersBreakdown = document.getElementById("overlayViewersBreakdown");
 const notificationsEl = document.getElementById("overlayNotifications");
 const composerEl = document.getElementById("overlayComposer");
 const composerInput = document.getElementById("overlayComposerInput");
@@ -24,6 +25,8 @@ const editbar = document.getElementById("overlayEditbar");
 const params = new URLSearchParams(location.search);
 const isDemo = params.get("demo") === "1";
 const isPip = params.get("pip") === "1";
+const isDesktopWindow = params.get("desktop") === "1";
+const isFloating = isPip || isDesktopWindow;
 const isEditing = params.get("edit") === "1";
 const showStatus = params.get("status") === "1";
 
@@ -86,6 +89,7 @@ let statuses = {};
 const viewerNumberFormat = new Intl.NumberFormat("es-ES");
 
 if (viewersIcon) viewersIcon.innerHTML = icon("eye", "icon");
+if (isFloating) document.body.classList.add("floating-window");
 if (isPip) document.body.classList.add("pip-mode");
 
 function applyConfig(overlaySettings = {}) {
@@ -132,19 +136,36 @@ function updateViewers() {
   }
   let total = 0;
   const breakdown = [];
+  const fragment = document.createDocumentFragment();
   for (const platform of ["twitch", "kick", "youtube", "tiktok"]) {
     const status = statuses[platform];
-    if (!status || status.state !== "connected") continue;
+    if (!status || status.state === "disabled") continue;
     const viewers = Math.max(0, Math.round(Number(status.viewers) || 0));
+    if (viewers <= 0) continue;
     total += viewers;
-    if (viewers > 0) {
-      breakdown.push(`${PLATFORM_META[platform]?.label || platform}: ${viewerNumberFormat.format(viewers)}`);
+    const meta = PLATFORM_META[platform];
+    breakdown.push(`${meta?.label || platform}: ${viewerNumberFormat.format(viewers)}`);
+    if (isFloating) {
+      const item = document.createElement("span");
+      item.className = "ol-viewers-item";
+      item.style.setProperty("--platform-color", meta?.color || "#ffffff");
+      const platformEl = document.createElement("span");
+      platformEl.className = "ol-viewers-platform";
+      platformEl.innerHTML = platformIcon(platform, "icon");
+      const countEl = document.createElement("span");
+      countEl.textContent = formatViewerTotal(viewers);
+      item.append(platformEl, countEl);
+      fragment.append(item);
     }
   }
   if (isDemo && total === 0) total = 1248;
   viewersEl.hidden = false;
   viewersEl.classList.toggle("is-zero", total === 0);
   if (viewersCount) viewersCount.textContent = formatViewerTotal(total);
+  if (viewersBreakdown) {
+    viewersBreakdown.replaceChildren(fragment);
+    viewersBreakdown.hidden = !isFloating || total === 0 || !viewersBreakdown.childElementCount;
+  }
   viewersEl.title = breakdown.length
     ? `Espectadores conectados · ${breakdown.join(" · ")}`
     : "Espectadores en todas las plataformas";

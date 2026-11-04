@@ -61,12 +61,16 @@ function extractViewerCount(html) {
   // YouTube muestra los espectadores simultáneos en originalViewCount.
   const original = html.match(/"originalViewCount"\s*:\s*"(\d+)"/);
   if (original) return Number(original[1]) || 0;
-  const runs = html.match(
+  const patterns = [
+    /"videoViewCountRenderer"[\s\S]{0,500}?"simpleText"\s*:\s*"([^"]*watching[^"]*)"/i,
     /"viewCount"\s*:\s*\{\s*"runs"\s*:\s*\[\s*\{\s*"text"\s*:\s*"([^"]+)"\s*\}\s*,\s*\{\s*"text"\s*:\s*"[^"]*watching[^"]*"/i,
-  );
-  if (runs) {
-    const digits = runs[1].replace(/[^\d]/g, "");
-    return Number(digits) || 0;
+    /"concurrentViewers"\s*:\s*"(\d+)"/i,
+  ];
+  for (const pattern of patterns) {
+    const match = html.match(pattern);
+    if (!match) continue;
+    const digits = match[1].replace(/[^\d]/g, "");
+    if (digits) return Number(digits) || 0;
   }
   return 0;
 }

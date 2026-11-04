@@ -17,7 +17,7 @@ const DATA_DIR = process.env.STREAMCHAT_DATA_DIR
   : ROOT;
 const CONFIG_PATH = path.join(DATA_DIR, "config.json");
 const PORT = clampNumber(process.env.PORT || 3000, 1, 65535, 3000);
-const VERSION = "1.1.1";
+const VERSION = "1.1.2";
 const HOST = "0.0.0.0";
 const IS_MAIN =
   Boolean(process.argv[1]) &&

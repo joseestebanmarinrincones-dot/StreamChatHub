@@ -17,8 +17,8 @@ Está inspirada en [Transparent Twitch Chat Overlay](https://github.com/baffler/
 Tienes varias formas:
 
 - **`StreamChat Hub.exe`** en el escritorio.
-- `release\StreamChatHub-1.1.1-portable.exe` dentro del proyecto. Es portátil: no necesita instalación.
-- `release\StreamChatHub-1.1.1-setup.exe` si prefieres instalarla como programa normal.
+- `release\StreamChatHub-1.1.2-portable.exe` dentro del proyecto. Es portátil: no necesita instalación.
+- `release\StreamChatHub-1.1.2-setup.exe` si prefieres instalarla como programa normal.
 
 La primera vez Windows puede mostrar “Windows protegió tu PC” porque el ejecutable no tiene firma digital. Pulsa **Más información → Ejecutar de todas formas**.
 
@@ -100,7 +100,7 @@ Para OBS, añade una fuente **Navegador** con la URL que aparece en **Compartir 
 
 El overlay de OBS **no se desvanece**: los mensajes se mantienen. La duración de **Ajustes → Overlay** solo afecta a la ventana flotante. El overlay de OBS guarda hasta 50 mensajes; los más antiguos se retiran cuando se supera ese límite para no salirse de la pantalla.
 
-El overlay muestra un contador con el **total de espectadores de todas las plataformas conectadas**. Suma Twitch, Kick, YouTube y TikTok/TikFinity, y se actualiza solo cuando cambian los datos. El número se abrevia: `999`, `1k`, `2k`… `999k`, `1m`, `2m`. Puedes ocultarlo en **Ajustes → Overlay → Espectadores totales** o con `?viewers=0` en la URL.
+El overlay muestra un contador con el **total de espectadores de todas las plataformas conectadas**. Suma Twitch, Kick, YouTube y TikTok/TikFinity, y se actualiza solo cuando cambian los datos. En la **ventana flotante** aparece en la esquina superior derecha con un desglose por plataforma; en OBS queda arriba a la izquierda. El número se abrevia: `999`, `1k`, `2k`… `999k`, `1m`, `2m`. Puedes ocultarlo en **Ajustes → Overlay → Espectadores totales** o con `?viewers=0` en la URL.
 
 Si usas **Transparent Twitch Chat Overlay**, añade una `Custom URL` con esa misma dirección. Así tienes el overlay también fuera de OBS.
 
@@ -225,8 +225,8 @@ npm run dist       REM genera los .exe en release\
 
 Resultados:
 
-- `release\StreamChatHub-1.1.1-portable.exe`
-- `release\StreamChatHub-1.1.1-setup.exe`
+- `release\StreamChatHub-1.1.2-portable.exe`
+- `release\StreamChatHub-1.1.2-setup.exe`
 
 ### Publicar una actualización
 

@@ -181,7 +181,7 @@ export class KickConnector extends BaseConnector {
     this.meta = {
       live: Boolean(live?.is_live),
       title: live?.session_title || "",
-      viewers: Number(live?.viewer_count) || 0,
+      viewers: Number(live?.viewer_count ?? live?.viewers ?? live?.viewerCount) || 0,
       manualIds: false,
     };
     // Corrige automáticamente IDs antiguos si el canal cambió de nombre.

@@ -1,10 +1,10 @@
-StreamChat Hub 1.1.1 - Aplicacion de escritorio
+StreamChat Hub 1.1.2 - Aplicacion de escritorio
 ===============================================
 
 ABRIR
 -----
 Haz doble clic en "StreamChat Hub.exe" (escritorio o release).
-Tambien puedes instalar release\StreamChatHub-1.1.1-setup.exe.
+Tambien puedes instalar release\StreamChatHub-1.1.2-setup.exe.
 Si ya tienes una version anterior abierta, cierrala antes de abrir esta.
 Version con TikFinity: abre "StreamChat Hub (TikFinity).exe"
 o el acceso directo "StreamChat Hub (TikFinity)" del escritorio.
@@ -59,8 +59,10 @@ Es una capa transparente, siempre encima y click-through.
 
 ESPECTADORES TOTALES
 --------------------
-El overlay muestra arriba a la izquierda cuanta gente te ve entre
-todas las plataformas conectadas: Twitch, Kick, YouTube y TikTok/TikFinity.
+El overlay muestra cuanta gente te ve entre todas las plataformas
+conectadas: Twitch, Kick, YouTube y TikTok/TikFinity.
+En la ventana flotante aparece arriba a la derecha y muestra un desglose
+por plataforma. En OBS aparece arriba a la izquierda.
 El numero se abrevia: 999, 1k, 2k... 999k, 1m, 2m.
 Se actualiza solo. Puedes ocultarlo en Ajustes -> Overlay ->
 "Espectadores totales", o con ?viewers=0 en la URL del overlay.

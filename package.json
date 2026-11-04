@@ -1,6 +1,6 @@
 {
   "name": "streamchat-hub",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "private": true,
   "type": "module",
   "description": "Chat unificado de Twitch, Kick, YouTube y TikTok con overlay transparente para OBS y enlaces para compartir con amigos",
